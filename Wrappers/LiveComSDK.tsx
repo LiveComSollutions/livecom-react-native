@@ -1,6 +1,20 @@
 import {NativeModules, ProcessedColorValue} from 'react-native';
 const {LiveComSDK} = NativeModules;
 
+export class LiveComConversionProduct { 
+    sku: String
+    name: String
+    streamId: String
+    count: Number
+    
+    constructor(sku: String, name: String, streamId: String, count: Number) {
+        this.sku = sku;
+        this.name = name;
+        this.streamId = streamId;
+        this.count = count;
+      }
+  }
+  
 interface LiveComInterface {
     // EventEmitter
     addListener: (eventType: string) => void;
@@ -23,6 +37,7 @@ interface LiveComInterface {
     ): void;
     presentStreams(): void;
     presentStreamWithId(id: String, product_id?: String): void;
+    trackConversionWithOrderId(orderId: String, orderAmountInCents: Number, currency: String, products: Array<LiveComConversionProduct>): void;
 
     setUseCustomProductScreen(useCustomProductScreen: Boolean): void;
     setUseCustomCheckoutScreen(useCustomCheckoutScreen: Boolean): void;

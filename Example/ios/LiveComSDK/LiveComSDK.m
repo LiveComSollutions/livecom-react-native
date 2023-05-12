@@ -118,38 +118,74 @@ RCT_EXPORT_METHOD(presentCheckout)
   });
 }
 
+RCT_EXPORT_METHOD(trackConversionWithOrderId:(NSString *)orderId
+                  orderAmountInCents:(NSInteger)orderAmountInCents
+                  currency:(NSString *)currency
+                  products:(NSArray<NSDictionary*> *)products)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSMutableArray<LiveComConversionProduct*>* livecomProducts = [[NSMutableArray alloc] init];
+    [products enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+      NSString* sku = [obj valueForKey: @"sku"];
+      NSString* name = [obj valueForKey: @"name"];
+      NSString* streamId = [obj valueForKey: @"streamId"];
+      NSNumber* count = [obj valueForKey: @"count"];
+
+      [livecomProducts addObject: [[LiveComConversionProduct alloc]
+                                   initWithSku:sku
+                                   name:name
+                                   streamId:streamId
+                                   count:count.intValue]];
+    }];
+    LiveComConversion* conversion = [[LiveComConversion alloc]
+                                     initWithOrderId:orderId
+                                     orderAmountInCents:orderAmountInCents
+                                     currency:currency
+                                     products:livecomProducts];
+    [[LiveCom shared] trackConversion:conversion];
+  });
+}
+
 #pragma mark - LiveComDelegate
 
 - (NSArray<NSString*> *)supportedEvents {
   return @[@"onCartChange", @"onProductAdd", @"onProductDelete", @"onRequestOpenProductScreen", @"onRequestOpenCheckoutScreen"];
 }
 
-- (BOOL)userDidRequestOpenProductScreenForSKU:(NSString *)productSKU presenting:(UIViewController *)presentingViewController {
+- (BOOL)userDidRequestOpenProductScreenFor:(LiveComProduct *)product streamId:(NSString *)streamId presenting:(UIViewController *)presentingViewController {
   if (useCustomProductScreen) {
-    [self sendEventWithName: @"onRequestOpenProductScreen" body: productSKU];
+    [self sendEventWithName: @"onRequestOpenProductScreen" body: @{@"product_sku": product.sku, @"stream_id": streamId}];
     return true;
   }
   return false;
 }
 
-- (BOOL)userDidRequestOpenCheckoutScreenWithProductSKUs:(NSArray<NSString *> *)productSKUs presenting:(UIViewController *)presentingViewController {
+- (BOOL)userDidRequestOpenCheckoutScreenWithProducts:(NSArray<LiveComProduct *> *)products presenting:(UIViewController *)presentingViewController {
   if (useCustomCheckoutScreen) {
+    NSMutableArray* productSKUs = [[NSMutableArray alloc] init];
+    [products enumerateObjectsUsingBlock:^(LiveComProduct * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+      [productSKUs addObject: obj.sku];
+    }];
     [self sendEventWithName: @"onRequestOpenCheckoutScreen" body: productSKUs];
     return true;
   }
   return false;
 }
 
-- (void)cartDidChangeWithProductSKUs:(NSArray<NSString *> *)productSKUs {
+- (void)cartDidChangeWithProducts:(NSArray<LiveComProduct *> *)products {
+  NSMutableArray* productSKUs = [[NSMutableArray alloc] init];
+  [products enumerateObjectsUsingBlock:^(LiveComProduct * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [productSKUs addObject: obj.sku];
+  }];
   [self sendEventWithName: @"onCartChange" body: productSKUs];
 }
 
-- (void)productDidAddToCart:(NSString *)productSKU {
-  [self sendEventWithName: @"onProductAdd" body: productSKU];
+- (void)productDidAddToCart:(LiveComProduct *)product inStreamId:(NSString *)streamId {
+  [self sendEventWithName: @"onProductAdd" body: @{@"product_sku": product.sku, @"stream_id": streamId}];
 }
 
 - (void)productDidDeleteFromCart:(NSString *)productSKU {
-  [self sendEventWithName: @"onProductDelete" body: productSKU];
+    [self sendEventWithName: @"onProductDelete" body: productSKU];
 }
 
 @end

@@ -25,7 +25,7 @@ PODS:
     - hermes-engine/Pre-built (= 0.71.7)
   - hermes-engine/Pre-built (0.71.7)
   - libevent (2.1.12)
-  - LiveComSDK (1.0.6):
+  - LiveComSDK (1.1.0):
     - Analytics (= 4.1.6)
     - StripeApplePay (= 22.8.4)
     - SwiftNIO (= 2.32.0)
@@ -603,7 +603,7 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 4438d2b8bf8bebaba1b1ac0451160bab59e491f8
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  LiveComSDK: 788ee41f504ced43901dc0df8d9185b6f39c6a7a
+  LiveComSDK: be0f54cefc30a0fbe26289988770d51a54efc7cf
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 5a4a30ac20c86eeadd6844a9328f78d4168cf9b2
   RCTTypeSafety: 279fc5861a89f0f37db3a585f27f971485b4b734
@@ -648,6 +648,6 @@ SPEC CHECKSUMS:
   SwiftNIOTransportServices: 0b2b407819d82eb63af558c5396e33c945759503
   Yoga: d56980c8914db0b51692f55533409e844b66133c
 
-PODFILE CHECKSUM: ea27be89d7891543ffbe519b6cd76ec9b0c805c7
+PODFILE CHECKSUM: e5031a23b70ecd9a18956429e41df739f3dc28ec
 
 COCOAPODS: 1.12.1

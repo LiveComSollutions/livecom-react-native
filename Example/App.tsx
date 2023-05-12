@@ -20,6 +20,7 @@ import {
   NativeEventEmitter,
 } from 'react-native';
 import LiveComSDK from './native_modules/LiveComSDK'
+import { LiveComConversionProduct } from './native_modules/LiveComSDK'
 
 const liveComEvt = new NativeEventEmitter(LiveComSDK)
 
@@ -45,13 +46,15 @@ function App(): JSX.Element {
     'https://website.com/{video_id}',
     'https://website.com/{video_id}?p={product_id}'
   )
-  LiveComSDK.setUseCustomProductScreen(true)
+  // LiveComSDK.setUseCustomProductScreen(true)
+  // LiveComSDK.setUseCustomCheckoutScreen(true)
+  LiveComSDK.trackConversionWithOrderId("test_order_id", 123, "USD",[new LiveComConversionProduct("test_sku", "Test product", "test_stream_id", 1)])
   // Events
   liveComEvt.addListener('onCartChange', (product_SKUs) => console.log('onCartChange - ' + product_SKUs))
-  liveComEvt.addListener('onProductAdd', (product_SKU) => console.log('onProductAdd - ' + product_SKU))
+  liveComEvt.addListener('onProductAdd', (data) => console.log('onProductAdd - product_sku: ' + data.product_sku + " stream_id: " + data.stream_id))
   liveComEvt.addListener('onProductDelete', (product_SKU) => console.log('onProductDelete - ' + product_SKU))
   // Called only if LiveComSDK.useCustomProductScreen is true
-  liveComEvt.addListener('onRequestOpenProductScreen', (product_SKU) => console.log('onRequestOpenProductScreen - ' + product_SKU))
+  liveComEvt.addListener('onRequestOpenProductScreen', (data) => console.log('onRequestOpenProductScreen - product_sku: ' + data.product_sku + " stream_id: " + data.stream_id))
     // Called only if LiveComSDK.useCustomCheckoutScreen is true
   liveComEvt.addListener('onRequestOpenCheckoutScreen', (product_SKUs) => console.log('onRequestOpenCheckoutScreen - ' + product_SKUs))
 
@@ -98,5 +101,4 @@ function App(): JSX.Element {
     </SafeAreaView>
   );
 }
-
 export default App;
