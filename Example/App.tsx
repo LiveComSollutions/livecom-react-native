@@ -48,7 +48,8 @@ function App(): JSX.Element {
   )
   // LiveComSDK.setUseCustomProductScreen(true)
   // LiveComSDK.setUseCustomCheckoutScreen(true)
-  LiveComSDK.trackConversionWithOrderId("test_order_id", 123, "USD",[new LiveComConversionProduct("test_sku", "Test product", "test_stream_id", 1)])
+  // LiveComSDK.trackConversionWithOrderId("test_react_order_id", 123, "USD",[new LiveComConversionProduct("test_sku", "Test product", "test_stream_id", 1)])
+
   // Events
   liveComEvt.addListener('onCartChange', (product_SKUs) => console.log('onCartChange - ' + product_SKUs))
   liveComEvt.addListener('onProductAdd', (data) => console.log('onProductAdd - product_sku: ' + data.product_sku + " stream_id: " + data.stream_id))

@@ -65,3 +65,21 @@ const liveComEvt = new NativeEventEmitter(LiveComSDK)
 liveComEvt.addListener('onRequestOpenProductScreen', (product_SKU) => console.log('onRequestOpenProductScreen - ' + product_SKU))
 liveComEvt.addListener('onRequestOpenCheckoutScreen', (product_SKUs) => console.log('onRequestOpenCheckoutScreen - ' + product_SKUs))
 ```
+3) Don't forget to call ```trackConversion``` when user made order with your custom checkout screen:
+``` sh 
+trackConversionWithOrderId(
+    orderId: String,
+    orderAmountInCents: Number,
+    currency: String,
+    products: Array<LiveComConversionProduct>
+): void;
+```
+Example:
+``` sh
+LiveComSDK.trackConversionWithOrderId(
+    "test_react_order_id",
+    123,
+    "USD",
+    [new LiveComConversionProduct("test_sku", "Test product", "test_stream_id", 1)]
+)
+```
