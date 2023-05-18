@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'kotlin-android'
 apply plugin: "com.facebook.react"
 
 import com.android.build.OutputFile
@@ -143,8 +144,11 @@ android {
                 output.versionCodeOverride =
                         defaultConfig.versionCode * 1000 + versionCodes.get(abi)
             }
-
         }
+    }
+
+    packagingOptions {
+        resources.excludes.add("META-INF/LICENSE*.*")
     }
 }
 
@@ -152,8 +156,9 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
-
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("com.livecommerceservice:sdk:1.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'

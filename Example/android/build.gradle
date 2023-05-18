@@ -15,7 +15,20 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
         classpath("com.android.tools.build:gradle:7.3.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
+    }
+}
+allprojects {
+    repositories {
+        // sdk located here
+        maven {
+            url "https://nexus.livecom.tech/repository/maven-android/"
+        }
+        // sdk uses https://github.com/muxinc/mux-stats-sdk-exoplayer for statistics
+        maven {
+            url "https://muxinc.jfrog.io/artifactory/default-maven-release-local"
+        }
     }
 }
