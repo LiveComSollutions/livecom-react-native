@@ -7,6 +7,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.livecommerceservice.sdk.domain.api.LiveCom
@@ -22,7 +24,7 @@ class LiveComModule(
     private var useCustomCheckout: Boolean = false
     private var useCustomProduct: Boolean = false
 
-    private enum class CallbackEvents(name: String) {
+    private enum class CallbackEvents(val key: String) {
         OPEN_PRODUCT_SCREEN("onRequestOpenProductScreen"),
         OPEN_CHECKOUT_SCREEN("onRequestOpenCheckoutScreen"),
         CART_CHANGED("onCartChange"),
@@ -35,11 +37,12 @@ class LiveComModule(
             override fun openCheckoutInsideSdk(productsInCart: List<LiveComProductInCart>): Boolean {
                 if (useCustomCheckout) {
                     val skuArray = Arguments.createArray()
-                    productsInCart.forEach { skuArray.pushString(it.sku) }
-                    val skuMap = Arguments.createMap().apply {
-                        putArray("product_SKUs", skuArray)
+                    productsInCart.forEach { product ->
+                        repeat(product.count) {
+                            skuArray.pushString(product.sku)
+                        }
                     }
-                    sendEvent(reactContext, CallbackEvents.OPEN_CHECKOUT_SCREEN.name, skuMap)
+                    sendEvent(reactContext, CallbackEvents.OPEN_CHECKOUT_SCREEN.key, skuArray)
                 }
                 return !useCustomCheckout
             }
@@ -50,18 +53,19 @@ class LiveComModule(
                         putString("product_sku", productSku)
                         putString("stream_id", streamId)
                     }
-                    sendEvent(reactContext, CallbackEvents.OPEN_PRODUCT_SCREEN.name, args)
+                    sendEvent(reactContext, CallbackEvents.OPEN_PRODUCT_SCREEN.key, args)
                 }
                 return !useCustomProduct
             }
 
             override fun productsInCartChanged(productsInCart: List<LiveComProductInCart>) {
                 val skuArray = Arguments.createArray()
-                productsInCart.forEach { skuArray.pushString(it.sku) }
-                val args = Arguments.createMap().apply {
-                    putArray("product_SKUs", skuArray)
+                productsInCart.forEach { product ->
+                    repeat(product.count) {
+                        skuArray.pushString(product.sku)
+                    }
                 }
-                sendEvent(reactContext, CallbackEvents.CART_CHANGED.name, args)
+                sendEvent(reactContext, CallbackEvents.CART_CHANGED.key, skuArray)
             }
 
             override fun productAddedToCart(product: LiveComProductInCart) {
@@ -69,20 +73,27 @@ class LiveComModule(
                     putString("product_sku", product.sku)
                     putString("stream_id", product.streamId)
                 }
-                sendEvent(reactContext, CallbackEvents.PRODUCT_ADDED.name, args)
+                sendEvent(reactContext, CallbackEvents.PRODUCT_ADDED.key, args)
             }
 
             override fun productRemovedFromCart(product: LiveComProductInCart) {
-                val args = Arguments.createMap().apply {
-                    putString("product_SKU", product.sku)
-                }
-                sendEvent(reactContext, CallbackEvents.PRODUCT_REMOVED.name, args)
+                sendEvent(reactContext, CallbackEvents.PRODUCT_REMOVED.key, product.sku)
             }
         }
     }
 
     @ReactMethod
-    fun configure(sdkToken: String, shareDomain: String) {
+    fun addListener(type: String?) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    fun removeListeners(type: Int?) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    fun configureAndroid(sdkToken: String, shareDomain: String) {
         LiveCom.configure(
             applicationContext = reactApplicationContext.applicationContext,
             sdkToken = sdkToken,
@@ -133,14 +144,27 @@ class LiveComModule(
     @ReactMethod
     fun trackConversionWithOrderId(
         orderId: String,
-        orderAmountInCents: Long,
+        orderAmountInCents: Double,
         currency: String,
-        products: Array<Map<String, Any>>
+        products: ReadableArray
     ) {
-        LiveCom.trackConversion(orderId, orderAmountInCents, currency, emptyList())
+        val toSend = mutableListOf<LiveComProductInCart>()
+        for (i in 0 until products.size()) {
+            val map = products.getMap(i)
+            toSend.add(
+                LiveComProductInCart(
+                    sku = map.getString("sku") ?: "",
+                    count = map.getDouble("count").toInt(),
+                    name = map.getString("name") ?: "",
+                    streamId = map.getString("streamId") ?: ""
+                )
+            )
+        }
+
+        LiveCom.trackConversion(orderId, orderAmountInCents.toLong(), currency, toSend)
     }
 
-    private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
+    private fun sendEvent(reactContext: ReactContext, eventName: String, params: Any?) {
         reactContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
             .emit(eventName, params)
