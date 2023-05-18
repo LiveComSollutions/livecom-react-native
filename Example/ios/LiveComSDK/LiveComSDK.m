@@ -50,7 +50,7 @@ RCT_EXPORT_METHOD(setUseCustomCheckoutScreen:(BOOL)_useCustomCheckoutScreen)
 #pragma mark - Methods
 
 #pragma mark - Configure
-RCT_EXPORT_METHOD(configureWithSDKKey:(NSString *)sdkKey
+RCT_EXPORT_METHOD(configureIOSWithSDKKey:(NSString *)sdkKey
                   primaryColor:(UIColor *)primaryColor
                   secondaryColor:(UIColor *)secondaryColor
                   gradientFirstColor:(UIColor *)gradientFirstColor

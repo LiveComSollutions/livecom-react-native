@@ -26,7 +26,7 @@ interface LiveComInterface {
     useCustomCheckoutScreen(): boolean;
 
     // Methods
-    configureWithSDKKey(
+    configureIOSWithSDKKey(
         sdkKey: String,
         primaryColor: ProcessedColorValue | null | undefined,
         secondaryColor: ProcessedColorValue | null | undefined,
@@ -35,6 +35,12 @@ interface LiveComInterface {
         videoLinkTemplate: String,
         productLinkTemplate: String
     ): void;
+
+    configureAndroid(
+        sdkKey: String,
+        shareDomain: String
+    ): void;
+
     presentStreams(): void;
     presentStreamWithId(id: String, product_id?: String): void;
     trackConversionWithOrderId(orderId: String, orderAmountInCents: Number, currency: String, products: Array<LiveComConversionProduct>): void;

@@ -18,6 +18,7 @@ import {
   processColor,
   Alert,
   NativeEventEmitter,
+  Platform
 } from 'react-native';
 import LiveComSDK from './native_modules/LiveComSDK'
 import { LiveComConversionProduct } from './native_modules/LiveComSDK'
@@ -37,26 +38,33 @@ function App(): JSX.Element {
   };
 
   // Initialize SDK on app start
-  LiveComSDK.configureWithSDKKey(
-    'f400270e-92bf-4df1-966c-9f33301095b3',
-    processColor('yellow'),
-    processColor('red'),
-    processColor('yellow'),
-    processColor('red'),
-    'https://website.com/{video_id}',
-    'https://website.com/{video_id}?p={product_id}'
-  )
+  // if (Platform.OS == 'ios') {
+  //   LiveComSDK.configureIOSWithSDKKey(
+  //     'f400270e-92bf-4df1-966c-9f33301095b3',
+  //     processColor('yellow'),
+  //     processColor('red'),
+  //     processColor('yellow'),
+  //     processColor('red'),
+  //     'https://website.com/{video_id}',
+  //     'https://website.com/{video_id}?p={product_id}'
+  //   )
+  // } else {
+  //   LiveComSDK.configureAndroid(
+  //     'e2d97b7e-9a65-4edd-a820-67cd91f8973d',
+  //     'website.com'
+  //   )
+  // }
   // LiveComSDK.setUseCustomProductScreen(true)
   // LiveComSDK.setUseCustomCheckoutScreen(true)
-  LiveComSDK.trackConversionWithOrderId("test_order_id", 123, "USD",[new LiveComConversionProduct("test_sku", "Test product", "test_stream_id", 1)])
+  // LiveComSDK.trackConversionWithOrderId("test_order_id", 123, "USD",[new LiveComConversionProduct("test_sku", "Test product", "test_stream_id", 1)])
   // Events
-  liveComEvt.addListener('onCartChange', (product_SKUs) => console.log('onCartChange - ' + product_SKUs))
-  liveComEvt.addListener('onProductAdd', (data) => console.log('onProductAdd - product_sku: ' + data.product_sku + " stream_id: " + data.stream_id))
-  liveComEvt.addListener('onProductDelete', (product_SKU) => console.log('onProductDelete - ' + product_SKU))
-  // Called only if LiveComSDK.useCustomProductScreen is true
-  liveComEvt.addListener('onRequestOpenProductScreen', (data) => console.log('onRequestOpenProductScreen - product_sku: ' + data.product_sku + " stream_id: " + data.stream_id))
-    // Called only if LiveComSDK.useCustomCheckoutScreen is true
-  liveComEvt.addListener('onRequestOpenCheckoutScreen', (product_SKUs) => console.log('onRequestOpenCheckoutScreen - ' + product_SKUs))
+  // liveComEvt.addListener('onCartChange', (product_SKUs) => console.log('onCartChange - ' + product_SKUs))
+  // liveComEvt.addListener('onProductAdd', (data) => console.log('onProductAdd - product_sku: ' + data.product_sku + " stream_id: " + data.stream_id))
+  // liveComEvt.addListener('onProductDelete', (product_SKU) => console.log('onProductDelete - ' + product_SKU))
+  // // Called only if LiveComSDK.useCustomProductScreen is true
+  // liveComEvt.addListener('onRequestOpenProductScreen', (data) => console.log('onRequestOpenProductScreen - product_sku: ' + data.product_sku + " stream_id: " + data.stream_id))
+  //   // Called only if LiveComSDK.useCustomCheckoutScreen is true
+  // liveComEvt.addListener('onRequestOpenCheckoutScreen', (product_SKUs) => console.log('onRequestOpenCheckoutScreen - ' + product_SKUs))
 
   return (
     <SafeAreaView style={{
